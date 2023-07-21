@@ -8,12 +8,12 @@
     </div>
     <div class="central-container">
       <div class="filtered-table">
-        <h2 class="table-title">Certificates</h2>
+        <h2 class="table-title">{{ activeMenuItem }}</h2>
         <table>
           <thead>
             <tr>
               <th class="table-subtitle">
-                <span class="filtered-text">Public</span>
+                <span class="filtered-text">{{ activeFilter }}</span>
               </th>
             </tr>
           </thead>
@@ -32,21 +32,49 @@
     <div class="right-container">
       <h2 class="table-title filter-title">Filter</h2>
       <div class="radio-buttons">
-        <div class="radio-button">
+        <div
+          class="radio-button"
+          @click="handleRadioClick(1, 'Public certificates')"
+        >
           <img
             class="radio-image"
-            src="../img/radio_active.png"
+            :src="
+              radioState === 1
+                ? require('@/img/radio_active.png')
+                : require('@/img/radio.png')
+            "
             alt=""
             id="radio1"
           />
           <label class="radio-label" for="radio1">Public certificates</label>
         </div>
-        <div class="radio-button">
-          <img class="radio-image" src="../img/radio.png" alt="" id="radio2" />
+        <div
+          class="radio-button"
+          @click="handleRadioClick(2, 'Private certificates')"
+        >
+          <img
+            class="radio-image"
+            :src="
+              radioState === 2
+                ? require('@/img/radio_active.png')
+                : require('@/img/radio.png')
+            "
+            alt=""
+            id="radio2"
+          />
           <label class="radio-label" for="radio2">Private certificates</label>
         </div>
-        <div class="radio-button">
-          <img class="radio-image" src="../img/radio.png" alt="" id="radio3" />
+        <div class="radio-button" @click="handleRadioClick(3, 'Both')">
+          <img
+            class="radio-image"
+            :src="
+              radioState === 3
+                ? require('@/img/radio_active.png')
+                : require('@/img/radio.png')
+            "
+            alt=""
+            id="radio3"
+          />
           <label class="radio-label" for="radio3">Both</label>
         </div>
       </div>
@@ -73,16 +101,30 @@
 </template>
 <script>
 import arr from "./data";
+import { eventBus } from "../main";
 export default {
   name: "CentralSection",
   data() {
     return {
       certificates: arr,
+      activeMenuItem: "Certificates",
+      activeFilter: "Public certificates",
+      radioState: 1,
     };
   },
 
+  methods: {
+    handleRadioClick(option, filterName) {
+      this.radioState = option;
+      this, (this.activeFilter = filterName);
+      eventBus.$emit("radioOptionChanged", option);
+    },
+  },
+
   mounted() {
-    console.log(this.certificates);
+    eventBus.$on("menuItemClicked", (menuItemText) => {
+      this.activeMenuItem = menuItemText;
+    });
   },
 };
 </script>
@@ -90,15 +132,12 @@ export default {
 <style lang="scss">
 .central-section {
   display: flex;
-  /* flex-direction: column; */
-  /* width: 1097px; */
   max-width: 100%;
   margin-left: 3px;
   flex-wrap: wrap;
 }
 .search-bar {
   display: flex;
-  /* width: 1097px; */
   width: 100%;
   height: 60px;
   flex-shrink: 0;
@@ -153,8 +192,6 @@ export default {
   align-items: center;
   border-radius: 12px;
   background: var(--right-panel-color, #363a42);
-
-  /* MainBlockShadow1 */
   box-shadow: 3px 3px 5px 0px rgba(8, 7, 13, 0.25) inset,
     1px 1px 0px 0px rgba(107, 102, 126, 0.49);
   margin: 24px 24px 22px 24px;
@@ -170,7 +207,6 @@ export default {
   line-height: normal;
   display: flex;
   height: 42px;
-  /* padding: 12px 583px 12px 16px; */
   padding: 0px 583px 0px 16px;
   align-items: center;
   margin: 0;
@@ -200,13 +236,12 @@ export default {
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
-  line-height: 24px; /* 150% */
+  line-height: 24px;
 }
 
 .td-content {
   display: flex;
   height: 50px;
-  /* padding: 13px 589px 13px 0px; */
   padding: 0px 589px 0px 0px;
   align-items: center;
   margin-left: 16px;
@@ -225,7 +260,6 @@ export default {
 }
 
 label {
-  /* Стили для визуальной стилизации радиокнопки */
   display: inline-block;
   color: #fff;
   font-feature-settings: "clig" off, "liga" off;
@@ -308,8 +342,6 @@ label {
       --main-button-color,
       linear-gradient(230deg, #9580ff 0%, #a361ff 100%)
     );
-
-    /* buttonsShadow' */
     box-shadow: 1px 1px 4px 0px #f1e7ff inset,
       2px 2px 7px 0px rgba(11, 10, 13, 0.44);
     cursor: pointer;

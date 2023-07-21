@@ -21,11 +21,6 @@ export default {
 <style lang="scss">
 .general-section {
   display: flex;
-  /* flex-direction: column; */
-  min-height: 100vh;
   flex-wrap: wrap;
-}
-.general-section:last-child {
-  order: 1;
 }
 </style>
